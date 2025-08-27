@@ -1,0 +1,16 @@
+image: gitpod/workspace-full
+
+tasks:
+  - name: Setup Flutter
+    init: |
+      # Install flutter SDK
+      git clone https://github.com/flutter/flutter.git -b stable --depth 1 ~/flutter
+      echo 'export PATH="$PATH:$HOME/flutter/bin"' >> ~/.bashrc
+      source ~/.bashrc
+      flutter doctor
+    command: |
+      flutter pub get
+
+ports:
+  - port: 8080
+    onOpen: open-preview
