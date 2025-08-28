@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { authenticateFirebaseToken } from '../middleware/auth';
+import { getFirestore } from '../lib/firebaseAdmin';
 import { getPayPalClient } from '../payments/paypalClient';
 
 const router = Router();
@@ -34,6 +35,16 @@ router.post('/paypal/capture-order/:orderId', async (req, res) => {
     const request: any = new (require('@paypal/checkout-server-sdk').orders.OrdersCaptureRequest)(orderId);
     request.requestBody({});
     const response = await getPayPalClient().execute(request);
+    if (response.result.status === 'COMPLETED') {
+      const { plan = 'pro', durationMonths = 1 } = req.body || {};
+      const uid = (req as any).user!.uid;
+      const now = Date.now();
+      const expires = now + durationMonths * 30 * 24 * 60 * 60 * 1000;
+      await getFirestore().collection('accounts').doc(uid).set(
+        { plan, planExpiresAt: expires, adsDisabled: plan !== 'free', updatedAt: now },
+        { merge: true }
+      );
+    }
     res.json({ status: response.result.status, id: response.result.id });
   } catch (e) {
     res.status(500).json({ error: 'PayPal capture failed' });
