@@ -24,12 +24,14 @@ export async function enforceMonthlyApiQuota(
     const plan = (accountSnap.data()?.plan as string) || 'free';
     const limit = plan === 'pro' ? 20000 : plan === 'enterprise' ? 1000000 : DEFAULT_MONTHLY_API_LIMIT;
     const docRef = db.collection('usage').doc(`${userId}:api:${monthKey}`);
+    let remaining = 0;
     await db.runTransaction(async (tx) => {
       const snap = await tx.get(docRef);
       const count = snap.exists ? (snap.data()?.count as number) || 0 : 0;
       if (count >= limit) {
         throw new Error('limit');
       }
+      remaining = Math.max(0, limit - (count + 1));
       tx.set(
         docRef,
         {
@@ -42,6 +44,10 @@ export async function enforceMonthlyApiQuota(
         { merge: true }
       );
     });
+    const resetDate = new Date(Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth() + 1, 1, 0, 0, 0, 0));
+    res.setHeader('X-RateLimit-Limit', String(limit));
+    res.setHeader('X-RateLimit-Remaining', String(remaining));
+    res.setHeader('X-RateLimit-Reset', String(Math.floor(resetDate.getTime() / 1000)));
     return next();
   } catch (err) {
     if ((err as Error).message === 'limit') {

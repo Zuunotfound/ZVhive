@@ -12,6 +12,7 @@ import plansRouter from './routes/plans';
 import communityRouter from './routes/community';
 import blogRouter from './routes/blog';
 import contentRouter from './routes/content';
+import searchRouter from './routes/search';
 
 export function createApp() {
   const app = express();
@@ -33,6 +34,7 @@ export function createApp() {
   app.use('/api/community', communityRouter);
   app.use('/api/blog', blogRouter);
   app.use('/api/content', contentRouter);
+  app.use('/api/search', searchRouter);
 
   return app;
 }

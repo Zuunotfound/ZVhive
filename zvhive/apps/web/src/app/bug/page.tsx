@@ -15,7 +15,7 @@ export default function BugReportPage() {
       setMsg(`Terkirim (#${res.id})`);
       setTitle("");
       setDescription("");
-    } catch (e) {
+    } catch {
       setMsg("Gagal / limit terpenuhi");
     }
   }

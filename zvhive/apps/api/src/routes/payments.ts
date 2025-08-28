@@ -56,5 +56,11 @@ router.post('/orkut/create-invoice', async (_req, res) => {
   res.json({ ok: true, message: 'Orkut gateway stubbed' });
 });
 
+// PayPal webhook stub (for future validation)
+router.post('/paypal/webhook', async (req, res) => {
+  // TODO: verify signature headers with PayPal SDK
+  res.json({ ok: true });
+});
+
 export default router;
 
