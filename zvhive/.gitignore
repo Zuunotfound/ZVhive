@@ -1,0 +1,8 @@
+.env
+.env.*
+apps/**/.env
+apps/**/.env.*
+node_modules
+dist
+.next
+.vercel
