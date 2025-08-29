@@ -1,7 +1,7 @@
 {
   "version": 2,
   "builds": [
-    { "src": "apps/web/next.config.ts", "use": "@vercel/next" },
+    { "src": "apps/web/package.json", "use": "@vercel/next" },
     { "src": "apps/api/api/vercel.ts", "use": "@vercel/node" }
   ],
   "routes": [
